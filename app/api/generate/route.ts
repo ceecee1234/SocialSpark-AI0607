@@ -44,18 +44,21 @@ export async function POST(req: NextRequest) {
     return new Response(JSON.stringify({ error: "请输入内容灵感" }), { status: 400 })
   }
 
-  const apiKey = process.env.OPENAI_API_KEY
+  const apiKey = process.env.NVIDIA_API_KEY
   if (!apiKey) {
-    return new Response(JSON.stringify({ error: "未配置 OpenAI API Key" }), { status: 500 })
+    return new Response(JSON.stringify({ error: "未配置 NVIDIA API Key" }), { status: 500 })
   }
 
-  const client = new OpenAI({ apiKey })
+  const client = new OpenAI({
+    apiKey,
+    baseURL: "https://integrate.api.nvidia.com/v1",
+  })
 
   const systemPrompt = SYSTEM_PROMPTS[platform] ?? SYSTEM_PROMPTS.xiaohongshu
   const toneHint = TONE_HINTS[tone] ?? ""
 
   const stream = await client.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "meta/llama-4-scout-17b-16e-instruct",
     stream: true,
     messages: [
       { role: "system", content: `${systemPrompt}\n\n${toneHint}` },
