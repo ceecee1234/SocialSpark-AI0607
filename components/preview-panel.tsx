@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Toast, useToast } from "@/components/ui/toast"
@@ -14,67 +13,20 @@ type Props = {
 
 export function PreviewPanel({ platform }: Props) {
   const meta = platforms.find((p) => p.id === platform)!
-  const { content, rawStream, streaming, loading, generate } = useAppStore()
+  const { streamText, streaming, loading, generate } = useAppStore()
   const { visible, message, show } = useToast()
 
-  const [displayedTitle, setDisplayedTitle] = useState("")
-  const [displayedBody, setDisplayedBody] = useState("")
-  const prevRawRef = useRef("")
-
-  useEffect(() => {
-    if (!streaming) {
-      if (content) {
-        setDisplayedTitle(content.title)
-        setDisplayedBody(content.body)
-      }
-      prevRawRef.current = ""
-      return
-    }
-
-    if (rawStream === prevRawRef.current) return
-    prevRawRef.current = rawStream
-
-    const titleMatch = rawStream.match(/"title"\s*:\s*"((?:[^"\\]|\\.)*)"?/)
-    if (titleMatch) {
-      setDisplayedTitle(
-        titleMatch[1].replace(/\\n/g, "\n").replace(/\\"/g, '"')
-      )
-    }
-
-    const bodyMatch = rawStream.match(/"body"\s*:\s*"((?:[^"\\]|\\.)*)"?/)
-    if (bodyMatch) {
-      setDisplayedBody(
-        bodyMatch[1].replace(/\\n/g, "\n").replace(/\\"/g, '"').replace(/\\$/, "")
-      )
-    }
-  }, [rawStream, streaming, content])
-
-  useEffect(() => {
-    if (loading && !streaming) {
-      setDisplayedTitle("")
-      setDisplayedBody("")
-    }
-  }, [loading, streaming])
+  const hasContent = streamText.length > 0
 
   const handleCopy = async () => {
-    const lines = [
-      displayedTitle,
-      "",
-      displayedBody,
-      "",
-      ...(content?.hashtags ?? []),
-    ]
-    const text = lines.join("\n").trim()
+    if (!hasContent) return
     try {
-      await navigator.clipboard.writeText(text)
+      await navigator.clipboard.writeText(streamText)
       show("复制成功，去发布吧！")
     } catch {
       show("复制失败，请手动选择文本")
     }
   }
-
-  const hashtags = content?.hashtags ?? []
-  const hasContent = !!(displayedTitle || displayedBody)
 
   return (
     <>
@@ -116,35 +68,14 @@ export function PreviewPanel({ platform }: Props) {
                 </div>
 
                 {/* Content */}
-                <div className="space-y-3 p-4 pb-16">
+                <div className="p-4 pb-16">
                   {hasContent ? (
-                    <>
-                      {displayedTitle && (
-                        <h3 className="text-pretty text-base font-bold leading-snug text-slate-900">
-                          {displayedTitle}
-                          {streaming && (
-                            <span className="ml-0.5 inline-block h-4 w-0.5 translate-y-0.5 animate-pulse bg-slate-500" />
-                          )}
-                        </h3>
+                    <div className="whitespace-pre-wrap text-[13px] leading-relaxed text-slate-700">
+                      {streamText}
+                      {streaming && (
+                        <span className="ml-0.5 inline-block h-3.5 w-0.5 translate-y-0.5 animate-pulse bg-slate-500" />
                       )}
-                      {displayedBody && (
-                        <p className="whitespace-pre-line text-[13px] leading-relaxed text-slate-600">
-                          {displayedBody}
-                          {streaming && !displayedTitle && (
-                            <span className="ml-0.5 inline-block h-3.5 w-0.5 translate-y-0.5 animate-pulse bg-slate-500" />
-                          )}
-                        </p>
-                      )}
-                      {hashtags.length > 0 && (
-                        <div className="flex flex-wrap gap-x-2 gap-y-1 pt-1">
-                          {hashtags.map((tag) => (
-                            <span key={tag} className="text-[13px] font-medium text-indigo-500">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </>
+                    </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center py-10 text-center">
                       <span className="text-3xl">✨</span>
