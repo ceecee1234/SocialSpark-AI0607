@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Toast, useToast } from "@/components/ui/toast"
-import { ImageIcon, Heart, MessageCircle, Bookmark, Share2, Copy, Download, RefreshCw } from "lucide-react"
+import { Image as ImageIcon, Heart, MessageCircle, Bookmark, Share2, Copy, Download, RefreshCw } from "lucide-react"
 import { platforms, type PlatformId } from "@/lib/platforms"
 import { useAppStore } from "@/lib/store"
 

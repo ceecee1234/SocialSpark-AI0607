@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { Sparkles, Wand2, Check, Loader2, AlertCircle } from "lucide-react"
+import { Sparkles, Wand as Wand2, Check, Loader as Loader2, CircleAlert as AlertCircle } from "lucide-react"
 import { platforms, tones } from "@/lib/platforms"
 import { useAppStore } from "@/lib/store"
 
