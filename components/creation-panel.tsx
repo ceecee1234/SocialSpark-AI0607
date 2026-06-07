@@ -3,30 +3,13 @@
 import { cn } from "@/lib/utils"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { Sparkles, Wand2, Check, Loader2 } from "lucide-react"
-import { platforms, tones, type PlatformId, type ToneId } from "@/lib/platforms"
+import { Sparkles, Wand2, Check, Loader2, AlertCircle } from "lucide-react"
+import { platforms, tones } from "@/lib/platforms"
+import { useAppStore } from "@/lib/store"
 
-type Props = {
-  idea: string
-  setIdea: (v: string) => void
-  platform: PlatformId
-  setPlatform: (v: PlatformId) => void
-  tone: ToneId
-  setTone: (v: ToneId) => void
-  loading: boolean
-  onGenerate: () => void
-}
+export function CreationPanel() {
+  const { idea, setIdea, platform, setPlatform, tone, setTone, loading, error, generate } = useAppStore()
 
-export function CreationPanel({
-  idea,
-  setIdea,
-  platform,
-  setPlatform,
-  tone,
-  setTone,
-  loading,
-  onGenerate,
-}: Props) {
   return (
     <div className="flex flex-col gap-7">
       {/* Section A: Idea Input */}
@@ -52,6 +35,12 @@ export function CreationPanel({
             AI 优化提示词
           </Button>
         </div>
+        {error && (
+          <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs text-red-600">
+            <AlertCircle className="size-4 shrink-0" />
+            {error}
+          </div>
+        )}
       </section>
 
       {/* Section B: Platform Selector */}
@@ -119,7 +108,7 @@ export function CreationPanel({
       {/* Action Button */}
       <Button
         type="button"
-        onClick={onGenerate}
+        onClick={generate}
         disabled={loading || !idea.trim()}
         className="group h-14 w-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-base font-semibold text-white shadow-[0_12px_40px_-10px_rgba(124,58,237,0.65)] transition-all duration-300 hover:shadow-[0_16px_48px_-8px_rgba(124,58,237,0.8)] hover:brightness-105 disabled:opacity-60"
       >

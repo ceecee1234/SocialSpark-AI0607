@@ -1,28 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useAppStore } from "@/lib/store"
 import { TopNav } from "@/components/top-nav"
 import { CreationPanel } from "@/components/creation-panel"
-import { PreviewPanel, type GeneratedContent } from "@/components/preview-panel"
-import type { PlatformId, ToneId } from "@/lib/platforms"
-
-const defaultContent: GeneratedContent = {
-  title: "城市角落里的宝藏咖啡馆☕️ 一秒治愈打工人",
-  body: "📍藏在巷子深处的安静小店，推门进去整个世界都慢了下来\n\n🪑原木桌椅 + 暖光氛围，随手一拍就是大片\n☕️招牌丝绒拿铁，奶泡绵密、回甘明显，真的会上头\n🎧背景音乐刚刚好，适合一个人发呆或敲电脑\n\n人均不到 40，性价比超高，强烈安利给同样需要喘口气的你！",
-  hashtags: ["#探店日记", "#咖啡馆", "#城市治愈", "#打工人快乐", "#周末去哪儿"],
-}
+import { PreviewPanel } from "@/components/preview-panel"
 
 export default function Page() {
-  const [idea, setIdea] = useState("")
-  const [platform, setPlatform] = useState<PlatformId>("xiaohongshu")
-  const [tone, setTone] = useState<ToneId>("emotional")
-  const [loading, setLoading] = useState(false)
-  const [content] = useState<GeneratedContent>(defaultContent)
-
-  const handleGenerate = () => {
-    setLoading(true)
-    setTimeout(() => setLoading(false), 1600)
-  }
+  const platform = useAppStore((s) => s.platform)
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-slate-50">
@@ -47,21 +31,12 @@ export default function Page() {
           <div className="grid gap-6 lg:grid-cols-[minmax(0,40fr)_minmax(0,60fr)]">
             {/* Left: Creation Engine */}
             <div className="rounded-3xl border border-white/70 bg-white/80 p-5 shadow-sm backdrop-blur-xl md:p-6">
-              <CreationPanel
-                idea={idea}
-                setIdea={setIdea}
-                platform={platform}
-                setPlatform={setPlatform}
-                tone={tone}
-                setTone={setTone}
-                loading={loading}
-                onGenerate={handleGenerate}
-              />
+              <CreationPanel />
             </div>
 
             {/* Right: Live Preview */}
             <div className="rounded-3xl border border-white/60 bg-slate-100/70 p-5 shadow-sm backdrop-blur-xl md:p-6">
-              <PreviewPanel platform={platform} content={content} loading={loading} />
+              <PreviewPanel platform={platform} />
             </div>
           </div>
         </main>
